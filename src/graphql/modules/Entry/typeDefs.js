@@ -18,8 +18,22 @@ export default gql`
 		pageInfo: PageInfo!
 	}
 
+	input EntryInput {
+		mood: MOODS!
+		title: String!
+		images: [ImageInput]
+		description: String
+		location: LocationInput
+
+		date: Date!
+	}
+
 	extend type Query {
 		getEntryDetail(id: ObjectId!): Entry
-		getEntries(month: MONTHS!, year: Int!): EntryConnection!
+		getEntries(month: Int!, year: Int!): EntryConnection!
+	}
+
+	extend type Mutation {
+		createEntry(entry: EntryInput!): Entry!
 	}
 `;

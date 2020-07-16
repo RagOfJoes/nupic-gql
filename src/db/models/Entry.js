@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
  */
 const EntrySchema = new mongoose.Schema({
 	title: {
-		trim: true,
 		type: String,
 		minlength: 4,
 		maxlength: 60,
@@ -31,7 +30,6 @@ const EntrySchema = new mongoose.Schema({
 		// Name(s)
 		main: {
 			type: String,
-			required: true,
 		},
 		secondary: {
 			type: String,
