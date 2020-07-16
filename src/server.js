@@ -5,10 +5,10 @@ import http from 'http';
 import initAuth from './oidc';
 import express from 'express';
 import modules from 'graphql/modules';
+import loaders from 'graphql/dataloader';
 import cookieParser from 'cookie-parser';
 import redisConnect from 'lib/redisConnect';
 import mongoConnect from 'lib/mongoConnect';
-// import loaders 	from './graphql/dataloader';
 import { ApolloServer } from 'apollo-server-express';
 
 (async () => {
@@ -40,10 +40,30 @@ import { ApolloServer } from 'apollo-server-express';
 	app.use('/graphql', async (req, res, next) => await authClient.checkToken(req, res, next));
 
 	const server = new ApolloServer({
+		debug: false,
+		tracing: false,
 		modules: modules,
 		cache: redisCache,
-		debug: process.env.NODE_ENV === 'development',
-		tracing: process.env.NODE_ENV === 'development',
+		plugins: [
+			() => ({
+				requestDidStart(requestContext) {
+					const start = Date.now();
+					let op;
+
+					return {
+						didResolveOperation(context) {
+							op = context.operationName;
+						},
+						willSendResponse(context) {
+							const stop = Date.now();
+							const elapsed = stop - start;
+							const size = JSON.stringify(context.response).length * 2;
+							console.log(`Operation ${op} completed in ${elapsed} ms and returned ${size} bytes`);
+						},
+					};
+				},
+			}),
+		],
 		playground: process.env.NODE_ENV === 'development',
 		introspection: process.env.NODE_ENV === 'development',
 		cacheControl: { defaultMaxAge: 60 * 2 }, // 1hr max age for cache,
@@ -52,7 +72,7 @@ import { ApolloServer } from 'apollo-server-express';
 		context: ({ req, res, connection }) => ({
 			req,
 			res,
-			// loaders,
+			loaders,
 			redisCache,
 			connection,
 		}),
