@@ -20,21 +20,6 @@ export default gql`
 		VERY_BAD
 	}
 
-	enum MONTHS {
-		JAN
-		FEB
-		MAR
-		APR
-		MAY
-		JUN
-		JUL
-		AUG
-		SEP
-		OCT
-		NOV
-		DEC
-	}
-
 	# File Types
 	type Image {
 		url: String!
@@ -42,12 +27,12 @@ export default gql`
 	}
 
 	type Location {
-		main: String!
+		main: String
 		secondary: String
 
-		placeId: ID!
-		latitude: Float!
-		longitude: Float!
+		placeId: ID
+		latitude: Float
+		longitude: Float
 	}
 
 	type MetaDate {
@@ -55,15 +40,23 @@ export default gql`
 		lastUpdate: Date
 	}
 
-	input CursorSortInput {
-		name: SORT_ORDER
-
-		creation: SORT_ORDER
-	}
-
 	type PageInfo {
 		cursor: ID!
 		hasNextPage: Boolean!
+	}
+
+	input ImageInput {
+		url: String!
+		name: String!
+	}
+
+	input LocationInput {
+		main: String!
+		secondary: String
+
+		placeId: ID!
+		latitude: Float!
+		longitude: Float!
 	}
 
 	# These are to be extended for further useage
